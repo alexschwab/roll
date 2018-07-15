@@ -19,7 +19,10 @@ void printHelp()
   writecln(Color.cyan, "For example: 'roll 4d6+2', 'roll d 20 - 1', or 'roll 3d8'\n");
   writeln("This program can also highlight the best or worst 'X' dice, with the");
   writeln("optional flags 'best X' or 'worst X'.");
-  writecln(Color.cyan, "For example: 'roll 10d8 best 4', or 'roll worst1 3d6'");
+  writecln(Color.cyan, "For example: 'roll 10d8 best 4', or 'roll worst1 3d6'\n");
+  writeln("You can also request to roll stats for a new character. It uses the");
+  writeln("roll 4d6 & take highest 3 method to generate the stats.");
+  writecln(Color.cyan, "For example: 'roll stat', or 'roll stats'");
   exit(0);
 }
 
@@ -27,7 +30,7 @@ void checkStats(in string[] args)
 {
   for(int i = 0; i < args.length; ++i)
   {
-    if(matchFirst(args[i], ctRegex!(r"(stat)", "i"))) // case insensitive matching
+    if(matchFirst(args[i], ctRegex!(r"(stats?)", "i"))) // case insensitive matching
     {
       rollStats(10);
       exit(0);
