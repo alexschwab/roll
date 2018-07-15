@@ -21,30 +21,57 @@ void printHelp()
   writeln("optional flags 'best X' or 'worst X'.");
   writecln(Color.cyan, "For example: 'roll 10d8 best 4', or 'roll worst1 3d6'\n");
   writeln("You can also request to roll stats for a new character. It uses the");
-  writeln("roll 4d6 & take highest 3 method to generate the stats.");
-  writecln(Color.cyan, "For example: 'roll stat', or 'roll stats'");
+  writeln("roll 4d6 & take highest 3 method to generate the stats. Specify the");
+  writeln("minimum stat by putting a number afterwords. By default, the min is 10.");
+  writecln(Color.cyan, "For example: 'roll stat', or 'roll stats 8'\n");
+  writeln("You can also request to roll percentile dice (2d10, result is 1-100)");
+  writecln(Color.cyan, "For example: 'roll percentile'\n");
+
   exit(0);
 }
 
+// check for if the user wants to roll for stats
 void checkStats(in string[] args)
 {
-  for(int i = 0; i < args.length; ++i)
+  foreach(i, element; args)
   {
-    if(matchFirst(args[i], ctRegex!(r"(stats?)", "i"))) // case insensitive matching
+    if(matchFirst(element, ctRegex!(r"(stats?)", "i"))) // case insensitive matching
     {
-      rollStats(10);
+      int minStat = 10;
+      if ((i + 1) < args.length)
+      {
+        try
+        {
+          minStat = to!int(args[i + 1]);
+          if (minStat > 18)
+          {
+            writeln("The maximum value of 3d6 is 18, if you set a number this high then... why are you even rolling?");
+            minStat = 18;
+          }
+        }
+        catch (ConvException)
+        {
+          minStat = 10;
+          writeln("Error converting the argument after ", element, " to a number to specify the minimum value.");
+          writeln("  Found: ", args[i + 1]);
+          writeln("  Continuing anyway, using ", minStat, " as the minimum stat.");
+        }
+      }
+
+      rollStats(minStat);
       exit(0);
     }
   }
 }
 
+// check if the user wants percentile dice, & rolls 1-100
 void checkPercentile(in string[] args)
 {
-  for(int i = 0; i < args.length; ++i)
+  foreach(element; args)
   {
-    if(matchFirst(args[i], ctRegex!(r"(percentile)", "i"))) // case insensitive matching
+    if(matchFirst(element, ctRegex!(r"(percentile)", "i"))) // case insensitive matching
     {
-      double result = uniform01() * 100.0;
+      const double result = uniform01() * 100.0;
       writec(Color.yellow, "Percentile");
       writeln(": ");
       writec(Color.cyan, cast(int)(result));
