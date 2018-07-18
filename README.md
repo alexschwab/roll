@@ -1,7 +1,7 @@
-#roll
+# Roll
 Roll is a general purpose command line calculator and dice rolling tool.
 
-##Supported Syntax
+## Supported Syntax
 | Keywords | Description                    |
 | ------------- | ------------------------------ |
 | `--help`      | Display the help window.       |
@@ -20,7 +20,7 @@ Roll is a general purpose command line calculator and dice rolling tool.
 
 Values can either be dice rolls or integer constants.
 
-#####Example
+##### Example
 ```
 roll 1d20 as "Damage" in Red + 2 as "Bonus Damage" in blue
 ```
