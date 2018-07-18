@@ -84,7 +84,7 @@ void checkBestWorst(ref string[] args, ref RollArgs params)
 {
   auto reg = ctRegex!(r"(?:(best)|(worst))([1-9]+\d*)?", "i"); // case insensitive matching
 
-  for(int i = 0; i < args.length; ++i)
+  for(int i; i < args.length; ++i)
   {
     auto match = matchFirst(args[i], reg); // search if user wants best or worst
     if(match.empty) // this arg didn't have best/worst
@@ -191,7 +191,7 @@ void generateRoll(in RollArgs params)
   int[] rolls = new int[](params.numDice);
 
   // do rolls & sum them
-  for(int i = 0; i < params.numDice; ++i)
+  for(int i; i < params.numDice; ++i)
   {
     rolls[i] = cast(int)(uniform01() * params.numSides + 1);
     sumDice += rolls[i];
@@ -224,35 +224,39 @@ void generateRoll(in RollArgs params)
 
 void rollStats(int minStat)
 {
-  int[] stats = new int[](6);
-  for(int i = 0; i < 6; ++i)
+  int[6] stats;
+  for(int i; i < stats.length; ++i)
   {
-    int[] rolls = new int[](4);
-  Retry:
-    for(int j = 0; j < 4; ++j)
-    {
-      rolls[j] = cast(int)(uniform01() * 6 + 1);
-    }
-    sort!("a > b")(rolls);
+    int[4] rolls;
 
-    for(int j = 0; j < 3; ++j)
+    while(true)
     {
-      stats[i] += rolls[j];
-    }
+      for(int j; j < rolls.length; ++j)
+      {
+        rolls[j] = cast(int)(uniform01() * 6 + 1);
+      }
+      sort!("a > b")(rolls[]);
 
-    if(stats[i] < minStat)
-    {
-      stats[i] = 0;
-      goto Retry;
+      // take only best 3 for rolling stats
+      for(int j; j < 3; ++j)
+      {
+        stats[i] += rolls[j];
+      }
+
+      if(stats[i] < minStat)
+      {
+        stats[i] = 0;
+        continue;
+      }
+      break;
     }
 
     writec(Color.yellow, "Rolled");
     write(": ");
     printRoll(rolls);
-
   }
 
-  sort!("a > b")(stats);
+  sort!("a > b")(stats[]);
   writec(Color.yellow, "\nStats");
   write(": ");
   printRoll(stats);
