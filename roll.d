@@ -83,7 +83,7 @@ void checkPercentile(in string[] args)
 void checkBestWorst(ref string[] args, ref RollArgs params)
 {
   auto reg = ctRegex!(r"(?:(best)|(worst))([1-9]+\d*)?", "i"); // case insensitive matching
-  
+
   for(int i = 0; i < args.length; ++i)
   {
     auto match = matchFirst(args[i], reg); // search if user wants best or worst
@@ -106,7 +106,7 @@ void checkBestWorst(ref string[] args, ref RollArgs params)
         auto numMatch = matchFirst(args[i+1], ctRegex!(r"(\d+)")); // any amount of digits in a row
         if(numMatch.empty) // next option is not a number
           printHelp();
-        
+
         params.numBorW = to!int(numMatch[1]); // save the number
         // remove best/worst & the number from args
         args = args[0 .. i] ~ args[i + 2 .. $];
@@ -116,7 +116,7 @@ void checkBestWorst(ref string[] args, ref RollArgs params)
         params.showBest = true;
       else // match[2].length
         params.showWorst = true;
-      
+
       return;
     }
   } // did not find best/worst in args
@@ -129,16 +129,16 @@ void parseInput(ref string[] args, out RollArgs params)
     writecln(Color.red, "error - too few arguments");
     printHelp();
   }
-  
+
   args = args[1 .. $]; // remove program name
   checkPercentile(args);
   checkStats(args);
   checkBestWorst(args, params);
-  
+
   char[] input;
-  foreach(cmd ; args)
+  foreach(cmd; args)
     input ~= cmd ~ " "; // put all seperated commands into one char array
-  
+
   // match main dice options, eg 4 d6 +2
   auto reg = ctRegex!(r"(\d*)\s*(d)\s*([1-9]+\d*)\s*(?:([-+]?)\s*(\d+))?");
   auto match = matchFirst(input, reg);
@@ -147,24 +147,24 @@ void parseInput(ref string[] args, out RollArgs params)
     writecln(Color.red, "error - bad input, no dice roll found.");
     printHelp();
   }
-  
+
   if(match[1].length > 0)
     params.numDice = to!int(match[1]);
   else
     params.numDice = 1;
-  
+
   params.numSides = to!int(match[3]);
   if(params.showBest || params.showWorst)
   {
     if(params.numDice <= params.numBorW)
       printHelp(); // doesn't make sense to ask for best of same number dice
   }
-  
+
   if(match[4].length > 0)
   {
     params.constant = to!int(match[5]);
     params.constant *= setOperation(match[4][0]); // make constant neg if sub op found
-  }  
+  }
 }
 
 int setOperation(char op)
@@ -189,7 +189,7 @@ void generateRoll(in RollArgs params)
 {
   int sumDice;
   int[] rolls = new int[](params.numDice);
-  
+
   // do rolls & sum them
   for(int i = 0; i < params.numDice; ++i)
   {
@@ -197,11 +197,11 @@ void generateRoll(in RollArgs params)
     sumDice += rolls[i];
   }
   sumDice += params.constant;
-  
+
   printRoll(rolls); // print in original order
-  
+
   writec(Color.yellow, "Sum of Rolls"); write(": "); writecln(Color.cyan, sumDice);
-  
+
   if(params.showBest)
   {
     writec(Color.yellow, "Best ", params.numBorW);
@@ -218,7 +218,7 @@ void generateRoll(in RollArgs params)
     sort(rolls);
   }
   write(": ");
-  
+
   printRoll(rolls, params.numBorW);
 }
 
@@ -258,14 +258,17 @@ void rollStats(int minStat)
   printRoll(stats);
 }
 
-void printRoll(in int[] rolls, int length = 0)
+// length is used for rolling only a subset of the total rolls, useful if rolls is sorted in some way
+void printRoll(int[] rolls, int length = 0)
+  in(length <= rolls.length) // these are contracts, they are runtime asserts that can be disabled with compiler flags
+  in(length >= 0)
 {
-  int len = length ? length : rolls.length;
-  
-  for(int i = 0; i < len;)
+  const int len = length ? length : rolls.length;
+
+  for(int i = 0; i < len; ++i)
   {
     writec(Color.cyan, rolls[i]);
-    if(++i < len)
+    if(i + 1 < len)
       write(", ");
   }
   write('\n');
@@ -278,7 +281,7 @@ int main(string[] args)
   parseInput(args, params);
   printInput(params);
   generateRoll(params);
-  
+
   return 0;
 }
 
