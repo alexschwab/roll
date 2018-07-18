@@ -44,13 +44,19 @@ For example, in the file:
 ```
 Called with `roll sword` would result in
 ```
-Flaming Longsword (2d6 + 1d6 + 2): (sum of everything)
-  Sword (result of 2d6 in blue) + Fire (result of 1d6 in red) + Strength (2 in blue)
+Sword (2d6): 4, 2
+Fire (1d6): 5
+
+Flaming Longsword (2d6 + 1d6 + 2): 13
+  Sword (6 in blue) + Fire (5 in red) + Strength (2 in blue)
 ```
 If the macro you're using supports it, you can call the identifier with a trailing exclamation mark to indicate you want to use the critical multiplier.
 
 `roll sword!`
 ```
-Flaming Longsword (2d6x3 + 1d6x3 + 2): (sum of everything)
-  Sword (result of 2d6x3 in blue) + Fire (result of 1d6x3 in red) + Strength (2 in blue)
+Sword (2d6): 4, 2
+Fire (1d6): 5
+
+Flaming Longsword (2d6x3 + 1d6x3 + 2): 35
+  Sword (18 in blue) + Fire (15 in red) + Strength (2 in blue)
 ```
