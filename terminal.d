@@ -254,7 +254,7 @@ version(Posix)
 
   enum numCapabilities = Capability.max - Capability.min + 1;
 
-  static const(char)* capabilities[numCapabilities];
+  static const(char)*[numCapabilities] capabilities;
 
 }
 else version(Windows)
